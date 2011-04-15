@@ -869,11 +869,16 @@
 					numPages = this.getNumPages(),
 					page = this.getCurrentPage(),
 					startIndex = page * this.numThumbs,
-					pagesRemaining = this.maxPagesToShow - 1;
+					pagesRemaining = this.maxPagesToShow - 1,
+					pageNum,
+					remainingPageCount,
+					prevPage,
+					lastPageNum,
+					nextPage;
 
-				var pageNum = page - Math.floor((this.maxPagesToShow - 1) / 2) + 1;
+				pageNum = page - Math.floor((this.maxPagesToShow - 1) / 2) + 1;
 				if (pageNum > 0) {
-					var remainingPageCount = numPages - pageNum;
+					remainingPageCount = numPages - pageNum;
 					if (remainingPageCount < pagesRemaining) {
 						pageNum = pageNum - (pagesRemaining - remainingPageCount);
 					}
@@ -885,7 +890,7 @@
 
 				// Prev Page Link
 				if (page > 0) {
-					var prevPage = startIndex - this.numThumbs;
+					prevPage = startIndex - this.numThumbs;
 					pager.append('<a rel="history" href="#' + this.data[prevPage].hash + '" title="' + this.prevPageLinkText + '">' + this.prevPageLinkText + '</a>');
 				}
 
@@ -908,7 +913,7 @@
 
 				// Create Last Page link if needed
 				if (pageNum < numPages) {
-					var lastPageNum = numPages - 1;
+					lastPageNum = numPages - 1;
 					if (pageNum < lastPageNum) {
 						pager.append('<span class="ellipsis">&hellip;</span>');
 					}
@@ -917,7 +922,7 @@
 				}
 
 				// Next Page Link
-				var nextPage = startIndex + this.numThumbs;
+				nextPage = startIndex + this.numThumbs;
 				if (nextPage < this.data.length) {
 					pager.append('<a rel="history" href="#' + this.data[nextPage].hash + '" title="' + this.nextPageLinkText + '">' + this.nextPageLinkText + '</a>');
 				}
@@ -975,7 +980,8 @@
 
 		this.displayedPage = -1;
 		this.currentImage = this.data[0];
-		var gallery = this;
+
+		var gallery = this, initFirstImage;
 
 		// Hide the loadingContainer
 		if (this.$loadingContainer) {
@@ -1013,7 +1019,7 @@
 			}
 		}
 
-		var initFirstImage = !this.enableHistory || !location.hash;
+		initFirstImage = !this.enableHistory || !location.hash;
 		if (this.enableHistory && location.hash) {
 			var hash = $.galleriffic.normalizeHash(location.hash);
 			var imageData = allImages[hash];
@@ -1032,34 +1038,34 @@
 			$(document).keydown(function (e) {
 				var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
 				switch (key) {
-					case 32: // space
-						gallery.next();
-						e.preventDefault();
-						break;
-					case 33: // Page Up
-						gallery.previousPage();
-						e.preventDefault();
-						break;
-					case 34: // Page Down
-						gallery.nextPage();
-						e.preventDefault();
-						break;
-					case 35: // End
-						gallery.gotoIndex(gallery.data.length-1);
-						e.preventDefault();
-						break;
-					case 36: // Home
-						gallery.gotoIndex(0);
-						e.preventDefault();
-						break;
-					case 37: // left arrow
-						gallery.previous();
-						e.preventDefault();
-						break;
-					case 39: // right arrow
-						gallery.next();
-						e.preventDefault();
-						break;
+				case 32: // space
+					gallery.next();
+					e.preventDefault();
+					break;
+				case 33: // Page Up
+					gallery.previousPage();
+					e.preventDefault();
+					break;
+				case 34: // Page Down
+					gallery.nextPage();
+					e.preventDefault();
+					break;
+				case 35: // End
+					gallery.gotoIndex(gallery.data.length - 1);
+					e.preventDefault();
+					break;
+				case 36: // Home
+					gallery.gotoIndex(0);
+					e.preventDefault();
+					break;
+				case 37: // left arrow
+					gallery.previous();
+					e.preventDefault();
+					break;
+				case 39: // right arrow
+					gallery.next();
+					e.preventDefault();
+					break;
 				}
 			});
 		}
