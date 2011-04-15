@@ -326,37 +326,44 @@
 			// Recursive function that performs the image preloading
 			// @param {Integer} startIndex The index of the first image the current preloader started on.
 			// @param {Integer} currentIndex The index of the current image to preload.
-			preloadRecursive: function(startIndex, currentIndex) {
+			preloadRecursive: function (startIndex, currentIndex) {
+				var gallery = this,
+					nextIndex,
+					preloadCount,
+					imageData,
+					image;
+
 				// Check if startIndex has been relocated
-				if (startIndex != this.preloadStartIndex) {
-					var nextIndex = this.getNextIndex(this.preloadStartIndex);
+				if (startIndex !== this.preloadStartIndex) {
+					nextIndex = this.getNextIndex(this.preloadStartIndex);
 					return this.preloadRecursive(this.preloadStartIndex, nextIndex);
 				}
 
-				var gallery = this;
-
 				// Now check for preloadAhead count
-				var preloadCount = currentIndex - startIndex;
-				if (preloadCount < 0)
-					preloadCount = this.data.length-1-startIndex+currentIndex;
+				preloadCount = currentIndex - startIndex;
+				if (preloadCount < 0) {
+					preloadCount = this.data.length - 1 - startIndex + currentIndex;
+				}
 				if (this.preloadAhead >= 0 && preloadCount > this.preloadAhead) {
 					// Do this in order to keep checking for relocated start index
-					setTimeout(function() { gallery.preloadRecursive(startIndex, currentIndex); }, 500);
+					setTimeout(function () { gallery.preloadRecursive(startIndex, currentIndex); }, 500);
 					return this;
 				}
 
-				var imageData = this.data[currentIndex];
-				if (!imageData)
+				imageData = this.data[currentIndex];
+				if (!imageData) {
 					return this;
+				}
 
 				// If already loaded, continue
-				if (imageData.image)
+				if (imageData.image) {
 					return this.preloadNext(startIndex, currentIndex); 
-				
+				}
+
 				// Preload the image
-				var image = new Image();
+				image = new Image();
 				
-				image.onload = function() {
+				image.onload = function () {
 					imageData.image = this;
 					gallery.preloadNext(startIndex, currentIndex);
 				};
@@ -370,13 +377,14 @@
 			// Called by preloadRecursive in order to preload the next image after the previous has loaded.
 			// @param {Integer} startIndex The index of the first image the current preloader started on.
 			// @param {Integer} currentIndex The index of the current image to preload.
-			preloadNext: function(startIndex, currentIndex) {
-				var nextIndex = this.getNextIndex(currentIndex);
-				if (nextIndex == startIndex) {
+			preloadNext: function (startIndex, currentIndex) {
+				var gallery = this,
+					nextIndex = this.getNextIndex(currentIndex);
+
+				if (nextIndex === startIndex) {
 					this.isPreloadComplete = true;
 				} else {
 					// Use setTimeout to free up thread
-					var gallery = this;
 					setTimeout(function() { gallery.preloadRecursive(startIndex, nextIndex); }, 100);
 				}
 
@@ -385,19 +393,25 @@
 
 			// Safe way to get the next image index relative to the current image.
 			// If the current image is the last, returns 0
-			getNextIndex: function(index) {
-				var nextIndex = index+1;
-				if (nextIndex >= this.data.length)
+			getNextIndex: function (index) {
+				var nextIndex = index + 1;
+
+				if (nextIndex >= this.data.length) {
 					nextIndex = 0;
+				}
+
 				return nextIndex;
 			},
 
 			// Safe way to get the previous image index relative to the current image.
 			// If the current image is the first, return the index of the last image in the gallery.
-			getPrevIndex: function(index) {
-				var prevIndex = index-1;
-				if (prevIndex < 0)
+			getPrevIndex: function (index) {
+				var prevIndex = index - 1;
+
+				if (prevIndex < 0) {
 					prevIndex = this.data.length-1;
+				}
+
 				return prevIndex;
 			},
 
