@@ -639,7 +639,7 @@
 							}
 						}
 					}
-				}
+				};
 
 				if (previousSlide.length === 0) {
 					// For the first slide, the previous slide will be empty, so we will call the callback immediately
@@ -688,9 +688,11 @@
 			// as the out transition when performing a synchronous transition.
 			// @param {Object} imageData An object holding the image metadata of the image to build.
 			// @param {Boolean} isSync Specifies whether the transitions are synchronized.
-			buildImage: function(imageData, isSync) {
-				var gallery = this;
-				var nextIndex = this.getNextIndex(imageData.index);
+			buildImage: function (imageData, isSync) {
+				var gallery = this,
+					nextIndex = this.getNextIndex(imageData.index),
+					newCaption = 0,
+					newSlide;
 
 				// removes leftover .current images that could
 				// case ghosting if a long fade is used
@@ -698,17 +700,16 @@
 				this.$captionContainer.find(".current").remove();
 
 				// Construct new hidden span for the image
-				var newSlide = this.$imageContainer
-					.append('<span class="image-wrapper current"><a class="advance-link" rel="history" href="#'+this.data[nextIndex].hash+'" title="'+imageData.title+'">&nbsp;</a></span>')
+				newSlide = this.$imageContainer
+					.append('<span class="image-wrapper current"><a class="advance-link" rel="history" href="#' + this.data[nextIndex].hash + '" title="' + imageData.title + '">&nbsp;</a></span>')
 					.find('span.current').css('opacity', '0');
 				
 				newSlide.find('a')
 					.append(imageData.image)
-					.click(function(e) {
+					.click(function (e) {
 						gallery.clickHandler(e, this);
 					});
 				
-				var newCaption = 0;
 				if (this.$captionContainer) {
 					// Construct new hidden caption for the image
 					newCaption = this.$captionContainer
@@ -727,34 +728,38 @@
 					this.onTransitionIn(newSlide, newCaption, isSync);
 				} else {
 					newSlide.fadeTo(this.getDefaultTransitionDuration(isSync), 1.0);
-					if (newCaption)
+					if (newCaption) {
 						newCaption.fadeTo(this.getDefaultTransitionDuration(isSync), 1.0);
+					}
 				}
 				
 				if (this.isSlideshowRunning) {
-					if (this.slideshowTimeout)
+					if (this.slideshowTimeout) {
 						clearTimeout(this.slideshowTimeout);
+					}
 
-					this.slideshowTimeout = setTimeout(function() { gallery.ssAdvance(); }, this.delay);
+					this.slideshowTimeout = setTimeout(function () { gallery.ssAdvance(); }, this.delay);
 				}
 
 				return this;
 			},
 
 			// Returns the current page index that should be shown for the currentImage
-			getCurrentPage: function() {
+			getCurrentPage: function () {
 				return Math.floor(this.currentImage.index / this.numThumbs);
 			},
 
 			// Applies the selected class to the current image's corresponding thumbnail.
 			// Also checks if the current page has changed and updates the displayed page of thumbnails if necessary.
-			syncThumbs: function() {
-				var page = this.getCurrentPage();
-				if (page != this.displayedPage)
+			syncThumbs: function () {
+				var page = this.getCurrentPage(), $thumbs;
+
+				if (page !== this.displayedPage) {
 					this.updateThumbs();
+				}
 
 				// Remove existing selected class and add selected class to new thumb
-				var $thumbs = this.find('ul.thumbs').children();
+				$thumbs = this.find('ul.thumbs').children();
 				$thumbs.filter('.selected').removeClass('selected');
 				$thumbs.eq(this.currentImage.index).addClass('selected');
 
@@ -765,21 +770,23 @@
 			// thumbnails that are to be displayed and the navigation controls.
 			// @param {Delegate} postTransitionOutHandler An optional delegate that is called after
 			// the thumbnails container has transitioned out and before the thumbnails are rebuilt.
-			updateThumbs: function(postTransitionOutHandler) {
-				var gallery = this;
-				var transitionOutCallback = function() {
-					// Call the Post-transition Out Handler
-					if (postTransitionOutHandler)
-						postTransitionOutHandler();
-					
-					gallery.rebuildThumbs();
+			updateThumbs: function (postTransitionOutHandler) {
+				var gallery = this,
+					transitionOutCallback = function () {
+						// Call the Post-transition Out Handler
+						if (postTransitionOutHandler) {
+							postTransitionOutHandler();
+						}
 
-					// Transition In the thumbsContainer
-					if (gallery.onPageTransitionIn)
-						gallery.onPageTransitionIn();
-					else
-						gallery.show();
-				};
+						gallery.rebuildThumbs();
+
+						// Transition In the thumbsContainer
+						if (gallery.onPageTransitionIn) {
+							gallery.onPageTransitionIn();
+						} else {
+							gallery.show();
+						}
+					};
 
 				// Transition Out the thumbsContainer
 				if (this.onPageTransitionOut) {
@@ -793,42 +800,47 @@
 			},
 
 			// Updates the set of thumbnails that are to be displayed and the navigation controls.
-			rebuildThumbs: function() {
+			rebuildThumbs: function () {
 				var needsPagination = this.data.length > this.numThumbs;
 
 				// Rebuild top pager
 				if (this.enableTopPager) {
 					var $topPager = this.find('div.top');
-					if ($topPager.length == 0)
+					if ($topPager.length === 0) {
 						$topPager = this.prepend('<div class="top pagination"></div>').find('div.top');
-					else
+					} else {
 						$topPager.empty();
+					}
 
-					if (needsPagination)
+					if (needsPagination) {
 						this.buildPager($topPager);
+					}
 				}
 
 				// Rebuild bottom pager
 				if (this.enableBottomPager) {
 					var $bottomPager = this.find('div.bottom');
-					if ($bottomPager.length == 0)
+					if ($bottomPager.length === 0) {
 						$bottomPager = this.append('<div class="bottom pagination"></div>').find('div.bottom');
-					else
+					} else {
 						$bottomPager.empty();
+					}
 
-					if (needsPagination)
+					if (needsPagination) {
 						this.buildPager($bottomPager);
+					}
 				}
 
 				var page = this.getCurrentPage();
-				var startIndex = page*this.numThumbs;
-				var stopIndex = startIndex+this.numThumbs-1;
-				if (stopIndex >= this.data.length)
-					stopIndex = this.data.length-1;
+				var startIndex = page * this.numThumbs;
+				var stopIndex = startIndex + this.numThumbs - 1;
+				if (stopIndex >= this.data.length) {
+					stopIndex = this.data.length - 1;
+				}
 
 				// Show/Hide thumbs
 				var $thumbsUl = this.find('ul.thumbs');
-				$thumbsUl.find('li').each(function(i) {
+				$thumbsUl.find('li').each(function (i) {
 					var $li = $(this);
 					if (i >= startIndex && i <= stopIndex) {
 						$li.show();
@@ -846,19 +858,19 @@
 			},
 
 			// Returns the total number of pages required to display all the thumbnails.
-			getNumPages: function() {
-				return Math.ceil(this.data.length/this.numThumbs);
+			getNumPages: function () {
+				return Math.ceil(this.data.length / this.numThumbs);
 			},
 
 			// Rebuilds the pager control in the specified matched element.
 			// @param {jQuery} pager A jQuery element set matching the particular pager to be rebuilt.
-			buildPager: function(pager) {
-				var gallery = this;
-				var numPages = this.getNumPages();
-				var page = this.getCurrentPage();
-				var startIndex = page * this.numThumbs;
-				var pagesRemaining = this.maxPagesToShow - 1;
-				
+			buildPager: function (pager) {
+				var gallery = this,
+					numPages = this.getNumPages(),
+					page = this.getCurrentPage(),
+					startIndex = page * this.numThumbs,
+					pagesRemaining = this.maxPagesToShow - 1;
+
 				var pageNum = page - Math.floor((this.maxPagesToShow - 1) / 2) + 1;
 				if (pageNum > 0) {
 					var remainingPageCount = numPages - pageNum;
@@ -874,14 +886,15 @@
 				// Prev Page Link
 				if (page > 0) {
 					var prevPage = startIndex - this.numThumbs;
-					pager.append('<a rel="history" href="#'+this.data[prevPage].hash+'" title="'+this.prevPageLinkText+'">'+this.prevPageLinkText+'</a>');
+					pager.append('<a rel="history" href="#' + this.data[prevPage].hash + '" title="' + this.prevPageLinkText + '">' + this.prevPageLinkText + '</a>');
 				}
 
 				// Create First Page link if needed
 				if (pageNum > 0) {
 					this.buildPageLink(pager, 0, numPages);
-					if (pageNum > 1)
+					if (pageNum > 1) {
 						pager.append('<span class="ellipsis">&hellip;</span>');
+					}
 					
 					pagesRemaining--;
 				}
