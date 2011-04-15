@@ -11,23 +11,24 @@
  *
  * Much thanks to primary contributer Ponticlaro (http://www.ponticlaro.com)
  */
-;(function($) {
+(function ($) {
 	// Globally keep track of all images by their unique hash.  Each item is an image data object.
-	var allImages = {};
-	var imageCounter = 0;
+	var allImages = {},
+		imageCounter = 0;
 
 	// Galleriffic static class
 	$.galleriffic = {
 		version: '2.0.1',
 
 		// Strips invalid characters and any leading # characters
-		normalizeHash: function(hash) {
+		normalizeHash: function (hash) {
 			return hash.replace(/^.*#/, '').replace(/\?.*$/, '');
 		},
 
-		getImage: function(hash) {
-			if (!hash)
+		getImage: function (hash) {
+			if (!hash) {
 				return undefined;
+			}
 
 			hash = $.galleriffic.normalizeHash(hash);
 			return allImages[hash];
@@ -36,14 +37,16 @@
 		// Global function that looks up an image by its hash and displays the image.
 		// Returns false when an image is not found for the specified hash.
 		// @param {String} hash This is the unique hash value assigned to an image.
-		gotoImage: function(hash) {
-			var imageData = $.galleriffic.getImage(hash);
-			if (!imageData)
-				return false;
+		gotoImage: function (hash) {
+			var imageData = $.galleriffic.getImage(hash), gallery;
 
-			var gallery = imageData.gallery;
+			if (!imageData) {
+				return false;
+			}
+
+			gallery = imageData.gallery;
 			gallery.gotoImage(imageData);
-			
+
 			return true;
 		},
 
@@ -54,14 +57,17 @@
 		// @param {Object} ownerGallery (Optional) When supplied, the located images
 		// gallery is verified to be the same as the specified owning gallery before
 		// performing the remove operation.
-		removeImageByHash: function(hash, ownerGallery) {
-			var imageData = $.galleriffic.getImage(hash);
-			if (!imageData)
-				return false;
+		removeImageByHash: function (hash, ownerGallery) {
+			var imageData = $.galleriffic.getImage(hash), gallery;
 
-			var gallery = imageData.gallery;
-			if (ownerGallery && ownerGallery != gallery)
+			if (!imageData) {
 				return false;
+			}
+
+			gallery = imageData.gallery;
+			if (ownerGallery && ownerGallery !== gallery) {
+				return false;
+			}
 
 			return gallery.removeImageByIndex(imageData.index);
 		}
