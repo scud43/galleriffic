@@ -107,7 +107,7 @@
 	};
 
 	// Primary Galleriffic initialization function that should be called on the thumbnail container.
-	$.fn.galleriffic = function(settings) {
+	$.fn.galleriffic = function (settings) {
 		//  Extend Gallery Object
 		$.extend(this, {
 			// Returns the version of the script
@@ -118,12 +118,14 @@
 			slideshowTimeout: undefined,
 
 			// This function is attached to the click event of generated hyperlinks within the gallery
-			clickHandler: function(e, link) {
+			clickHandler: function (e, link) {
+				var hash;
+
 				this.pause();
 
 				if (!this.enableHistory) {
 					// The href attribute holds the unique hash for an image
-					var hash = $.galleriffic.normalizeHash($(link).attr('href'));
+					hash = $.galleriffic.normalizeHash($(link).attr('href'));
 					$.galleriffic.gotoImage(hash);
 					e.preventDefault();
 				}
@@ -131,7 +133,7 @@
 
 			// Appends an image to the end of the set of images.  Argument listItem can be either a jQuery DOM element or arbitrary html.
 			// @param listItem Either a jQuery object or a string of html of the list item that is to be added to the gallery.
-			appendImage: function(listItem) {
+			appendImage: function (listItem) {
 				this.addImage(listItem, false, false);
 				return this;
 			},
@@ -139,7 +141,7 @@
 			// Inserts an image into the set of images.  Argument listItem can be either a jQuery DOM element or arbitrary html.
 			// @param listItem Either a jQuery object or a string of html of the list item that is to be added to the gallery.
 			// @param {Integer} position The index within the gallery where the item shouold be added.
-			insertImage: function(listItem, position) {
+			insertImage: function (listItem, position) {
 				this.addImage(listItem, false, true, position);
 				return this;
 			},
@@ -149,33 +151,36 @@
 			// @param {Boolean} thumbExists Specifies whether the thumbnail already exists in the DOM or if it needs to be added.
 			// @param {Boolean} insert Specifies whether the the image is appended to the end or inserted into the gallery.
 			// @param {Integer} position The index within the gallery where the item shouold be added.
-			addImage: function(listItem, thumbExists, insert, position) {
-				var $li = ( typeof listItem === "string" ) ? $(listItem) : listItem;				
-				var $aThumb = $li.find('a.thumb');
-				var slideUrl = $aThumb.attr('href');
-				var title = $aThumb.attr('title');
-				var $caption = $li.find('.caption').remove();
-				var hash = $aThumb.attr('name');
+			addImage: function (listItem, thumbExists, insert, position) {
+				var $li = (typeof listItem === "string") ? $(listItem) : listItem,				
+					$aThumb = $li.find('a.thumb'),
+					slideUrl = $aThumb.attr('href'),
+					title = $aThumb.attr('title'),
+					$caption = $li.find('.caption').remove(),
+					hash = $aThumb.attr('name'),
+					gallery,
+					imageData;
 
 				// Increment the image counter
-				imageCounter++;
+				imageCounter += 1;
 
 				// Autogenerate a hash value if none is present or if it is a duplicate
-				if (!hash || allImages[''+hash]) {
+				if (!hash || allImages['' + hash]) {
 					hash = imageCounter;
 				}
 
 				// Set position to end when not specified
-				if (!insert)
+				if (!insert) {
 					position = this.data.length;
+				}
 				
-				var imageData = {
-					title:title,
-					slideUrl:slideUrl,
-					caption:$caption,
-					hash:hash,
-					gallery:this,
-					index:position
+				imageData = {
+					title	: title,
+					slideUrl: slideUrl,
+					caption	: $caption,
+					hash	: hash,
+					gallery	: this,
+					index	: position
 				};
 
 				// Add the imageData to this gallery's array of images
@@ -184,36 +189,37 @@
 
 					// Reset index value on all imageData objects
 					this.updateIndices(position);
-				}
-				else {
+				} else {
 					this.data.push(imageData);
 				}
 
-				var gallery = this;
+				gallery = this;
 
 				// Add the element to the DOM
 				if (!thumbExists) {
 					// Update thumbs passing in addition post transition out handler
-					this.updateThumbs(function() {
+					this.updateThumbs(function () {
 						var $thumbsUl = gallery.find('ul.thumbs');
-						if (insert)
-							$thumbsUl.children(':eq('+position+')').before($li);
-						else
+						if (insert) {
+							$thumbsUl.children(':eq(' + position + ')').before($li);
+						} else {
 							$thumbsUl.append($li);
+						}
 						
-						if (gallery.onImageAdded)
+						if (gallery.onImageAdded) {
 							gallery.onImageAdded(imageData, $li);
+						}
 					});
 				}
 
 				// Register the image globally
-				allImages[''+hash] = imageData;
+				allImages['' + hash] = imageData;
 
 				// Setup attributes and click handler
 				$aThumb.attr('rel', 'history')
-					.attr('href', '#'+hash)
+					.attr('href', '#' + hash)
 					.removeAttr('name')
-					.click(function(e) {
+					.click(function (e) {
 						gallery.clickHandler(e, this);
 					});
 
