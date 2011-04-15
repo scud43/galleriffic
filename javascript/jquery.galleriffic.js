@@ -896,21 +896,22 @@
 						pager.append('<span class="ellipsis">&hellip;</span>');
 					}
 					
-					pagesRemaining--;
+					pagesRemaining -= 1;
 				}
 
 				// Page Index Links
 				while (pagesRemaining > 0) {
 					this.buildPageLink(pager, pageNum, numPages);
-					pagesRemaining--;
-					pageNum++;
+					pagesRemaining -= 1;
+					pageNum += 1;
 				}
 
 				// Create Last Page link if needed
 				if (pageNum < numPages) {
 					var lastPageNum = numPages - 1;
-					if (pageNum < lastPageNum)
+					if (pageNum < lastPageNum) {
 						pager.append('<span class="ellipsis">&hellip;</span>');
+					}
 
 					this.buildPageLink(pager, lastPageNum, numPages);
 				}
@@ -918,10 +919,10 @@
 				// Next Page Link
 				var nextPage = startIndex + this.numThumbs;
 				if (nextPage < this.data.length) {
-					pager.append('<a rel="history" href="#'+this.data[nextPage].hash+'" title="'+this.nextPageLinkText+'">'+this.nextPageLinkText+'</a>');
+					pager.append('<a rel="history" href="#' + this.data[nextPage].hash + '" title="' + this.nextPageLinkText + '">' + this.nextPageLinkText + '</a>');
 				}
 
-				pager.find('a').click(function(e) {
+				pager.find('a').click(function (e) {
 					gallery.clickHandler(e, this);
 				});
 
@@ -932,14 +933,14 @@
 			// @param {jQuery} pager A jQuery element set matching the particular pager to be rebuilt.
 			// @param {Integer} pageNum The page number of the page link to build.
 			// @param {Integer} numPages The total number of pages required to display all thumbnails.
-			buildPageLink: function(pager, pageNum, numPages) {
+			buildPageLink: function (pager, pageNum, numPages) {
 				var pageLabel = pageNum + 1;
 				var currentPage = this.getCurrentPage();
-				if (pageNum == currentPage)
-					pager.append('<span class="current">'+pageLabel+'</span>');
-				else if (pageNum < numPages) {
-					var imageIndex = pageNum*this.numThumbs;
-					pager.append('<a rel="history" href="#'+this.data[imageIndex].hash+'" title="'+pageLabel+'">'+pageLabel+'</a>');
+				if (pageNum === currentPage) {
+					pager.append('<span class="current">' + pageLabel + '</span>');
+				} else if (pageNum < numPages) {
+					var imageIndex = pageNum * this.numThumbs;
+					pager.append('<a rel="history" href="#' + this.data[imageIndex].hash + '" title="' + pageLabel + '">' + pageLabel + '</a>');
 				}
 				
 				return this;
@@ -948,29 +949,38 @@
 
 		// Now initialize the gallery
 		$.extend(this, defaults, settings);
-		
+
 		// Verify the history plugin is available
-		if (this.enableHistory && !$.history.init)
+		if (this.enableHistory && !$.history.init) {
 			this.enableHistory = false;
-		
+		}
+
 		// Select containers
-		if (this.imageContainerSel) this.$imageContainer = $(this.imageContainerSel);
-		if (this.captionContainerSel) this.$captionContainer = $(this.captionContainerSel);
-		if (this.loadingContainerSel) this.$loadingContainer = $(this.loadingContainerSel);
+		if (this.imageContainerSel) {
+			this.$imageContainer = $(this.imageContainerSel);
+		}
+		if (this.captionContainerSel) {
+			this.$captionContainer = $(this.captionContainerSel);
+		}
+		if (this.loadingContainerSel) {
+			this.$loadingContainer = $(this.loadingContainerSel);
+		}
 
 		// Initialize the thumbails
 		this.initializeThumbs();
 		
-		if (this.maxPagesToShow < 3)
+		if (this.maxPagesToShow < 3) {
 			this.maxPagesToShow = 3;
+		}
 
 		this.displayedPage = -1;
 		this.currentImage = this.data[0];
 		var gallery = this;
 
 		// Hide the loadingContainer
-		if (this.$loadingContainer)
+		if (this.$loadingContainer) {
 			this.$loadingContainer.hide();
+		}
 
 		// Setup controls
 		if (this.controlsContainerSel) {
@@ -979,14 +989,14 @@
 			if (this.renderSSControls) {
 				if (this.autoStart) {
 					this.$controlsContainer
-						.append('<div class="ss-controls"><a href="#pause" class="pause" title="'+this.pauseLinkText+'">'+this.pauseLinkText+'</a></div>');
+						.append('<div class="ss-controls"><a href="#pause" class="pause" title="' + this.pauseLinkText + '">' + this.pauseLinkText + '</a></div>');
 				} else {
 					this.$controlsContainer
-						.append('<div class="ss-controls"><a href="#play" class="play" title="'+this.playLinkText+'">'+this.playLinkText+'</a></div>');
+						.append('<div class="ss-controls"><a href="#play" class="play" title="' + this.playLinkText + '">' + this.playLinkText + '</a></div>');
 				}
 
 				this.$controlsContainer.find('div.ss-controls a')
-					.click(function(e) {
+					.click(function (e) {
 						gallery.toggleSlideshow();
 						e.preventDefault();
 						return false;
@@ -995,9 +1005,9 @@
 		
 			if (this.renderNavControls) {
 				this.$controlsContainer
-					.append('<div class="nav-controls"><a class="prev" rel="history" title="'+this.prevLinkText+'">'+this.prevLinkText+'</a><a class="next" rel="history" title="'+this.nextLinkText+'">'+this.nextLinkText+'</a></div>')
+					.append('<div class="nav-controls"><a class="prev" rel="history" title="' + this.prevLinkText + '">' + this.prevLinkText + '</a><a class="next" rel="history" title="' + this.nextLinkText + '">' + this.nextLinkText + '</a></div>')
 					.find('div.nav-controls a')
-					.click(function(e) {
+					.click(function (e) {
 						gallery.clickHandler(e, this);
 					});
 			}
@@ -1007,19 +1017,21 @@
 		if (this.enableHistory && location.hash) {
 			var hash = $.galleriffic.normalizeHash(location.hash);
 			var imageData = allImages[hash];
-			if (!imageData)
+			if (!imageData) {
 				initFirstImage = true;
+			}
 		}
 
 		// Setup gallery to show the first image
-		if (initFirstImage)
+		if (initFirstImage) {
 			this.gotoIndex(0, false, true);
+		}
 
 		// Setup Keyboard Navigation
 		if (this.enableKeyboardNavigation) {
-			$(document).keydown(function(e) {
+			$(document).keydown(function (e) {
 				var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-				switch(key) {
+				switch (key) {
 					case 32: // space
 						gallery.next();
 						e.preventDefault();
@@ -1053,11 +1065,12 @@
 		}
 
 		// Auto start the slideshow
-		if (this.autoStart)
+		if (this.autoStart) {
 			this.play();
+		}
 
 		// Kickoff Image Preloader after 1 second
-		setTimeout(function() { gallery.preloadInit(); }, 1000);
+		setTimeout(function () { gallery.preloadInit(); }, 1000);
 
 		return this;
 	};
