@@ -530,34 +530,43 @@
 			// @param {Integer} index The index of the image in the gallery to display.
 			// @param {Boolean} dontPause Specifies whether to pause the slideshow.
 			// @param {Boolean} bypassHistory Specifies whether to delegate navigation to the history plugin when history is enabled.
-			gotoIndex: function(index, dontPause, bypassHistory) {
-				if (!dontPause)
+			gotoIndex: function (index, dontPause, bypassHistory) {
+				var imageData;
+
+				if (!dontPause) {
 					this.pause();
-				
-				if (index < 0) index = 0;
-				else if (index >= this.data.length) index = this.data.length-1;
-				
-				var imageData = this.data[index];
-				
-				if (!bypassHistory && this.enableHistory)
+				}
+
+				if (index < 0) {
+					index = 0;
+				} else if (index >= this.data.length) {
+					index = this.data.length - 1;
+				}
+
+				imageData = this.data[index];
+
+				if (!bypassHistory && this.enableHistory) {
 					$.history.load(String(imageData.hash));  // At the moment, historyLoad only accepts string arguments
-				else
+				} else {
 					this.gotoImage(imageData);
+				}
 
 				return this;
 			},
 
 			// This function is garaunteed to be called anytime a gallery slide changes.
 			// @param {Object} imageData An object holding the image metadata of the image to navigate to.
-			gotoImage: function(imageData) {
-				if (this.currentImage.index == imageData.index)
+			gotoImage: function (imageData) {
+				if (this.currentImage.index === imageData.index) {
 					return this;
-				
+				}
+
 				var index = imageData.index;
 
-				if (this.onSlideChange)
+				if (this.onSlideChange) {
 					this.onSlideChange(this.currentImage.index, index);
-				
+				}
+
 				this.currentImage = imageData;
 				this.preloadRelocate(index);
 				
@@ -569,42 +578,46 @@
 			// Returns the default transition duration value.  The value is halved when not
 			// performing a synchronized transition.
 			// @param {Boolean} isSync Specifies whether the transitions are synchronized.
-			getDefaultTransitionDuration: function(isSync) {
-				if (isSync)
+			getDefaultTransitionDuration: function (isSync) {
+				if (isSync) {
 					return this.defaultTransitionDuration;
+				}
 				return this.defaultTransitionDuration / 2;
 			},
 
 			// Rebuilds the slideshow image and controls and performs transitions
-			refresh: function() {
-				var imageData = this.currentImage;
-				if (!imageData)
-					return this;
+			refresh: function () {
+				var gallery = this,
+					imageData = this.currentImage,
+					index, previousSlide, previousCaption, isSync, isTransitioning, image, transitionOutCallback;
 
-				var index = imageData.index;
+				if (!imageData) {
+					return this;
+				}
+
+				index = imageData.index;
 
 				// Update Controls
 				if (this.$controlsContainer) {
 					this.$controlsContainer
-						.find('div.nav-controls a.prev').attr('href', '#'+this.data[this.getPrevIndex(index)].hash).end()
-						.find('div.nav-controls a.next').attr('href', '#'+this.data[this.getNextIndex(index)].hash);
+						.find('div.nav-controls a.prev').attr('href', '#' + this.data[this.getPrevIndex(index)].hash).end()
+						.find('div.nav-controls a.next').attr('href', '#' + this.data[this.getNextIndex(index)].hash);
 				}
 
-				var previousSlide = this.$imageContainer.find('span.current').addClass('previous').removeClass('current');
-				var previousCaption = 0;
+				previousSlide = this.$imageContainer.find('span.current').addClass('previous').removeClass('current');
+				previousCaption = 0;
 
 				if (this.$captionContainer) {
 					previousCaption = this.$captionContainer.find('span.current').addClass('previous').removeClass('current');
 				}
 
 				// Perform transitions simultaneously if syncTransitions is true and the next image is already preloaded
-				var isSync = this.syncTransitions && imageData.image;
+				isSync = this.syncTransitions && imageData.image;
 
 				// Flag we are transitioning
-				var isTransitioning = true;
-				var gallery = this;
+				isTransitioning = true;
 
-				var transitionOutCallback = function() {
+				transitionOutCallback = function () {
 					// Flag that the transition has completed
 					isTransitioning = false;
 
@@ -612,11 +625,12 @@
 					previousSlide.remove();
 
 					// Remove old caption
-					if (previousCaption)
+					if (previousCaption) {
 						previousCaption.remove();
+					}
 
 					if (!isSync) {
-						if (imageData.image && imageData.hash == gallery.data[gallery.currentImage.index].hash) {
+						if (imageData.image && imageData.hash === gallery.data[gallery.currentImage.index].hash) {
 							gallery.buildImage(imageData, isSync);
 						} else {
 							// Show loading container
@@ -625,9 +639,9 @@
 							}
 						}
 					}
-				};
+				}
 
-				if (previousSlide.length == 0) {
+				if (previousSlide.length === 0) {
 					// For the first slide, the previous slide will be empty, so we will call the callback immediately
 					transitionOutCallback();
 				} else {
@@ -635,24 +649,26 @@
 						this.onTransitionOut(previousSlide, previousCaption, isSync, transitionOutCallback);
 					} else {
 						previousSlide.fadeTo(this.getDefaultTransitionDuration(isSync), 0.0, transitionOutCallback);
-						if (previousCaption)
+						if (previousCaption) {
 							previousCaption.fadeTo(this.getDefaultTransitionDuration(isSync), 0.0);
+						}
 					}
 				}
 
 				// Go ahead and begin transitioning in of next image
-				if (isSync)
+				if (isSync) {
 					this.buildImage(imageData, isSync);
+				}
 
 				if (!imageData.image) {
-					var image = new Image();
+					image = new Image();
 					
 					// Wire up mainImage onload event
-					image.onload = function() {
+					image.onload = function () {
 						imageData.image = this;
 
 						// Only build image if the out transition has completed and we are still on the same image hash
-						if (!isTransitioning && imageData.hash == gallery.data[gallery.currentImage.index].hash) {
+						if (!isTransitioning && imageData.hash === gallery.data[gallery.currentImage.index].hash) {
 							gallery.buildImage(imageData, isSync);
 						}
 					};
