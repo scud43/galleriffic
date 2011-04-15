@@ -173,7 +173,7 @@
 				if (!insert) {
 					position = this.data.length;
 				}
-				
+
 				imageData = {
 					title	: title,
 					slideUrl: slideUrl,
@@ -205,7 +205,7 @@
 						} else {
 							$thumbsUl.append($li);
 						}
-						
+
 						if (gallery.onImageAdded) {
 							gallery.onImageAdded(imageData, $li);
 						}
@@ -228,42 +228,45 @@
 
 			// Removes an image from the gallery based on its index.
 			// Returns false when the index is out of range.
-			removeImageByIndex: function(index) {
-				if (index < 0 || index >= this.data.length)
+			removeImageByIndex: function (index) {
+				if (index < 0 || index >= this.data.length) {
 					return false;
-				
+				}
+
 				var imageData = this.data[index];
-				if (!imageData)
+				if (!imageData) {
 					return false;
-				
+				}
+
 				this.removeImage(imageData);
-				
+
 				return true;
 			},
 
 			// Convenience method that simply calls the global removeImageByHash method.
-			removeImageByHash: function(hash) {
+			removeImageByHash: function (hash) {
 				return $.galleriffic.removeImageByHash(hash, this);
 			},
 
 			// Removes an image from the gallery.
-			removeImage: function(imageData) {
+			removeImage: function (imageData) {
 				var index = imageData.index;
-				
+
 				// Remove the image from the gallery data array
 				this.data.splice(index, 1);
 				
 				// Remove the global registration
-				delete allImages[''+imageData.hash];
+				delete allImages['' + imageData.hash];
 				
 				// Remove the image's list item from the DOM
-				this.updateThumbs(function() {
+				this.updateThumbs(function () {
 					var $li = gallery.find('ul.thumbs')
-						.children(':eq('+index+')')
+						.children(':eq(' + index + ')')
 						.remove();
 
-					if (gallery.onImageRemoved)
+					if (gallery.onImageRemoved) {
 						gallery.onImageRemoved(imageData, $li);
+					}
 				});
 
 				// Update each image objects index value
@@ -273,20 +276,23 @@
 			},
 
 			// Updates the index values of the each of the images in the gallery after the specified index
-			updateIndices: function(startIndex) {
-				for (i = startIndex; i < this.data.length; i++) {
+			updateIndices: function (startIndex) {
+				var i;
+
+				for (i = startIndex; i < this.data.length; i += 1) {
 					this.data[i].index = i;
 				}
-				
+
 				return this;
 			},
 
 			// Scraped the thumbnail container for thumbs and adds each to the gallery
-			initializeThumbs: function() {
-				this.data = [];
+			initializeThumbs: function () {
 				var gallery = this;
 
-				this.find('ul.thumbs > li').each(function(i) {
+				this.data = [];
+
+				this.find('ul.thumbs > li').each(function (i) {
 					gallery.addImage($(this), true, false);
 				});
 
@@ -296,17 +302,22 @@
 			isPreloadComplete: false,
 
 			// Initalizes the image preloader
-			preloadInit: function() {
-				if (this.preloadAhead == 0) return this;
-				
+			preloadInit: function () {
+				if (this.preloadAhead === 0) {
+					return this;
+				}
+
+				var nextIndex;
+
 				this.preloadStartIndex = this.currentImage.index;
-				var nextIndex = this.getNextIndex(this.preloadStartIndex);
+				nextIndex = this.getNextIndex(this.preloadStartIndex);
+
 				return this.preloadRecursive(this.preloadStartIndex, nextIndex);
 			},
 
 			// Changes the location in the gallery the preloader should work
 			// @param {Integer} index The index of the image where the preloader should restart at.
-			preloadRelocate: function(index) {
+			preloadRelocate: function (index) {
 				// By changing this startIndex, the current preload script will restart
 				this.preloadStartIndex = index;
 				return this;
