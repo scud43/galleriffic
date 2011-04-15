@@ -801,11 +801,17 @@
 
 			// Updates the set of thumbnails that are to be displayed and the navigation controls.
 			rebuildThumbs: function () {
-				var needsPagination = this.data.length > this.numThumbs;
+				var needsPagination = this.data.length > this.numThumbs,
+					$topPager,
+					$bottomPager,
+					page,
+					startIndex,
+					stopIndex,
+					$thumbsUl;
 
 				// Rebuild top pager
 				if (this.enableTopPager) {
-					var $topPager = this.find('div.top');
+					$topPager = this.find('div.top');
 					if ($topPager.length === 0) {
 						$topPager = this.prepend('<div class="top pagination"></div>').find('div.top');
 					} else {
@@ -819,7 +825,7 @@
 
 				// Rebuild bottom pager
 				if (this.enableBottomPager) {
-					var $bottomPager = this.find('div.bottom');
+					$bottomPager = this.find('div.bottom');
 					if ($bottomPager.length === 0) {
 						$bottomPager = this.append('<div class="bottom pagination"></div>').find('div.bottom');
 					} else {
@@ -831,15 +837,15 @@
 					}
 				}
 
-				var page = this.getCurrentPage();
-				var startIndex = page * this.numThumbs;
-				var stopIndex = startIndex + this.numThumbs - 1;
+				page = this.getCurrentPage();
+				startIndex = page * this.numThumbs;
+				stopIndex = startIndex + this.numThumbs - 1;
 				if (stopIndex >= this.data.length) {
 					stopIndex = this.data.length - 1;
 				}
 
 				// Show/Hide thumbs
-				var $thumbsUl = this.find('ul.thumbs');
+				$thumbsUl = this.find('ul.thumbs');
 				$thumbsUl.find('li').each(function (i) {
 					var $li = $(this);
 					if (i >= startIndex && i <= stopIndex) {
@@ -939,12 +945,14 @@
 			// @param {Integer} pageNum The page number of the page link to build.
 			// @param {Integer} numPages The total number of pages required to display all thumbnails.
 			buildPageLink: function (pager, pageNum, numPages) {
-				var pageLabel = pageNum + 1;
-				var currentPage = this.getCurrentPage();
+				var pageLabel = pageNum + 1,
+					currentPage = this.getCurrentPage(),
+					imageIndex;
+
 				if (pageNum === currentPage) {
 					pager.append('<span class="current">' + pageLabel + '</span>');
 				} else if (pageNum < numPages) {
-					var imageIndex = pageNum * this.numThumbs;
+					imageIndex = pageNum * this.numThumbs;
 					pager.append('<a rel="history" href="#' + this.data[imageIndex].hash + '" title="' + pageLabel + '">' + pageLabel + '</a>');
 				}
 				
