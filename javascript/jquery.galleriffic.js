@@ -22,6 +22,10 @@
 
 		// Strips invalid characters and any leading # characters
 		normalizeHash: function (hash) {
+			if (!hash) {
+				return undefined;
+			}
+
 			return hash.replace(/^.*#/, '').replace(/\?.*$/, '');
 		},
 
@@ -554,7 +558,7 @@
 				return this;
 			},
 
-			// This function is garaunteed to be called anytime a gallery slide changes.
+			// This function is guaranteed to be called anytime a gallery slide changes.
 			// @param {Object} imageData An object holding the image metadata of the image to navigate to.
 			gotoImage: function (imageData) {
 				if (this.currentImage.index === imageData.index) {
@@ -622,7 +626,9 @@
 					isTransitioning = false;
 
 					// Remove the old slide
-					previousSlide.remove();
+					if (previousSlide.length !== 0) {
+						previousSlide.remove();
+					}
 
 					// Remove old caption
 					if (previousCaption) {
@@ -696,8 +702,12 @@
 
 				// removes leftover .current images that could
 				// case ghosting if a long fade is used
-				this.$imageContainer.find(".current").remove();
-				this.$captionContainer.find(".current").remove();
+				if (this.$imageContainer) {
+					this.$imageContainer.find(".current").remove();
+				}
+				if (this.$captionContainer) {
+					this.$captionContainer.find(".current").remove();
+				}
 
 				// Construct new hidden span for the image
 				newSlide = this.$imageContainer
