@@ -14,7 +14,7 @@
 (function ($) {
 	// Galleriffic static class
 	$.galleriffic = {
-		version: '2.0.1',
+		version: '2.0.1 with changes',
 
 		// Globally keep track of all images by their unique hash. Each item is an image data object.
 		allImages: {},
