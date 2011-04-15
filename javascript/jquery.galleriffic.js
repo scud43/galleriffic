@@ -12,13 +12,13 @@
  * Much thanks to primary contributer Ponticlaro (http://www.ponticlaro.com)
  */
 (function ($) {
-	// Globally keep track of all images by their unique hash.  Each item is an image data object.
-	var allImages = {},
-		imageCounter = 0;
-
 	// Galleriffic static class
 	$.galleriffic = {
 		version: '2.0.1',
+
+		// Globally keep track of all images by their unique hash. Each item is an image data object.
+		allImages: {},
+		imageCounter: 0,
 
 		// Strips invalid characters and any leading # characters
 		normalizeHash: function (hash) {
@@ -31,7 +31,7 @@
 			}
 
 			hash = $.galleriffic.normalizeHash(hash);
-			return allImages[hash];
+			return $.galleriffic.allImages[hash];
 		},
 
 		// Global function that looks up an image by its hash and displays the image.
@@ -164,11 +164,11 @@
 					imageData;
 
 				// Increment the image counter
-				imageCounter += 1;
+				$.galleriffic.imageCounter += 1;
 
 				// Autogenerate a hash value if none is present or if it is a duplicate
-				if (!hash || allImages['' + hash]) {
-					hash = imageCounter;
+				if (!hash || $.galleriffic.allImages['' + hash]) {
+					hash = $.galleriffic.imageCounter;
 				}
 
 				// Set position to end when not specified
@@ -215,7 +215,7 @@
 				}
 
 				// Register the image globally
-				allImages['' + hash] = imageData;
+				$.galleriffic.allImages['' + hash] = imageData;
 
 				// Setup attributes and click handler
 				$aThumb.attr('rel', 'history')
@@ -258,7 +258,7 @@
 				this.data.splice(index, 1);
 
 				// Remove the global registration
-				delete allImages['' + imageData.hash];
+				delete $.galleriffic.allImages['' + imageData.hash];
 
 				// Remove the image's list item from the DOM
 				this.updateThumbs(function () {
@@ -1030,7 +1030,7 @@
 		initFirstImage = !this.enableHistory || !location.hash;
 		if (this.enableHistory && location.hash) {
 			hash = $.galleriffic.normalizeHash(location.hash);
-			imageData = allImages[hash];
+			imageData = $.galleriffic.allImages[hash];
 			if (!imageData) {
 				initFirstImage = true;
 			}
