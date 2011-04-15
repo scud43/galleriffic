@@ -385,7 +385,7 @@
 					this.isPreloadComplete = true;
 				} else {
 					// Use setTimeout to free up thread
-					setTimeout(function() { gallery.preloadRecursive(startIndex, nextIndex); }, 100);
+					setTimeout(function () { gallery.preloadRecursive(startIndex, nextIndex); }, 100);
 				}
 
 				return this;
@@ -409,14 +409,14 @@
 				var prevIndex = index - 1;
 
 				if (prevIndex < 0) {
-					prevIndex = this.data.length-1;
+					prevIndex = this.data.length - 1;
 				}
 
 				return prevIndex;
 			},
 
 			// Pauses the slideshow
-			pause: function() {
+			pause: function () {
 				this.isSlideshowRunning = false;
 				if (this.slideshowTimeout) {
 					clearTimeout(this.slideshowTimeout);
@@ -430,12 +430,14 @@
 						.attr('href', '#play')
 						.html(this.playLinkText);
 				}
-				
+
 				return this;
 			},
 
 			// Plays the slideshow
-			play: function() {
+			play: function () {
+				var gallery = this;
+
 				this.isSlideshowRunning = true;
 
 				if (this.$controlsContainer) {
@@ -447,19 +449,19 @@
 				}
 
 				if (!this.slideshowTimeout) {
-					var gallery = this;
-					this.slideshowTimeout = setTimeout(function() { gallery.ssAdvance(); }, this.delay);
+					this.slideshowTimeout = setTimeout(function () { gallery.ssAdvance(); }, this.delay);
 				}
 
 				return this;
 			},
 
 			// Toggles the state of the slideshow (playing/paused)
-			toggleSlideshow: function() {
-				if (this.isSlideshowRunning)
+			toggleSlideshow: function () {
+				if (this.isSlideshowRunning) {
 					this.pause();
-				else
+				} else {
 					this.play();
+				}
 
 				return this;
 			},
@@ -467,9 +469,10 @@
 			// Advances the slideshow to the next image and delegates navigation to the
 			// history plugin when history is enabled
 			// enableHistory is true
-			ssAdvance: function() {
-				if (this.isSlideshowRunning)
+			ssAdvance: function () {
+				if (this.isSlideshowRunning) {
 					this.next(true);
+				}
 
 				return this;
 			},
@@ -477,7 +480,7 @@
 			// Advances the gallery to the next image.
 			// @param {Boolean} dontPause Specifies whether to pause the slideshow.
 			// @param {Boolean} bypassHistory Specifies whether to delegate navigation to the history plugin when history is enabled.  
-			next: function(dontPause, bypassHistory) {
+			next: function (dontPause, bypassHistory) {
 				this.gotoIndex(this.getNextIndex(this.currentImage.index), dontPause, bypassHistory);
 				return this;
 			},
@@ -485,7 +488,7 @@
 			// Navigates to the previous image in the gallery.
 			// @param {Boolean} dontPause Specifies whether to pause the slideshow.
 			// @param {Boolean} bypassHistory Specifies whether to delegate navigation to the history plugin when history is enabled.
-			previous: function(dontPause, bypassHistory) {
+			previous: function (dontPause, bypassHistory) {
 				this.gotoIndex(this.getPrevIndex(this.currentImage.index), dontPause, bypassHistory);
 				return this;
 			},
@@ -493,12 +496,15 @@
 			// Navigates to the next page in the gallery.
 			// @param {Boolean} dontPause Specifies whether to pause the slideshow.
 			// @param {Boolean} bypassHistory Specifies whether to delegate navigation to the history plugin when history is enabled.
-			nextPage: function(dontPause, bypassHistory) {
-				var page = this.getCurrentPage();
-				var lastPage = this.getNumPages() - 1;
+			nextPage: function (dontPause, bypassHistory) {
+				var page = this.getCurrentPage(),
+					lastPage = this.getNumPages() - 1,
+					startIndex,
+					nextPage;
+
 				if (page < lastPage) {
-					var startIndex = page * this.numThumbs;
-					var nextPage = startIndex + this.numThumbs;
+					startIndex = page * this.numThumbs;
+					nextPage = startIndex + this.numThumbs;
 					this.gotoIndex(nextPage, dontPause, bypassHistory);
 				}
 
@@ -508,11 +514,12 @@
 			// Navigates to the previous page in the gallery.
 			// @param {Boolean} dontPause Specifies whether to pause the slideshow.
 			// @param {Boolean} bypassHistory Specifies whether to delegate navigation to the history plugin when history is enabled.
-			previousPage: function(dontPause, bypassHistory) {
-				var page = this.getCurrentPage();
+			previousPage: function (dontPause, bypassHistory) {
+				var page = this.getCurrentPage(), startIndex, prevPage;
+
 				if (page > 0) {
-					var startIndex = page * this.numThumbs;
-					var prevPage = startIndex - this.numThumbs;				
+					startIndex = page * this.numThumbs;
+					prevPage = startIndex - this.numThumbs;				
 					this.gotoIndex(prevPage, dontPause, bypassHistory);
 				}
 				
