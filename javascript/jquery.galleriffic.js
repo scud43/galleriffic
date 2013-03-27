@@ -218,6 +218,11 @@
 					});
 				}
 
+        if (this.data.length === 1) {
+          this.currentImage = imageData;
+          this.refresh();
+        }
+
 				// Register the image globally
 				$.galleriffic.allImages['' + hash] = imageData;
 
@@ -313,7 +318,12 @@
 
 				var nextIndex;
 
-				this.preloadStartIndex = this.currentImage.index;
+        if (!this.currentImage) {
+          this.preloadStartIndex = 0;
+        } else {
+          this.preloadStartIndex = this.currentImage.index;
+        }
+
 				nextIndex = this.getNextIndex(this.preloadStartIndex);
 
 				return this.preloadRecursive(this.preloadStartIndex, nextIndex);
@@ -561,6 +571,9 @@
 			// This function is guaranteed to be called anytime a gallery slide changes.
 			// @param {Object} imageData An object holding the image metadata of the image to navigate to.
 			gotoImage: function (imageData) {
+        if(!imageData)
+          return false;
+
 				var index = imageData.index;
 
 				if (this.onSlideChange) {
